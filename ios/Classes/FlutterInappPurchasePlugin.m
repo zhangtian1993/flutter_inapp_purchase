@@ -274,6 +274,17 @@
 #pragma mark ===== StoreKit Delegate
 
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
+    // Fix: getPendingTransactionsIOS Unable to receive results
+    if([request isKindOfClass:[SKReceiptRefreshRequest class]]) {
+        if(receiptBlock) {
+            NSLog(@"- (void)request:(SKRequest *)request didFailWithError:(NSError *)error\nFinished but receipt refreshed failed!");
+            NSError *error = [[NSError alloc]initWithDomain:@"Receipt request finished but it failed!" code:10 userInfo:nil];
+            receiptBlock(nil, error);
+        }
+        receiptBlock = nil;
+        return;
+    }
+
     NSValue* key = [NSValue valueWithNonretainedObject:request];
     FlutterResult result = [fetchProducts objectForKey:key];
     if (result != nil) {

@@ -394,6 +394,11 @@ class FlutterInappPurchase {
         'getPendingTransactions',
       );
 
+      // Fix: getPendingTransactionsIOS Unable to receive results
+      if (result == null) {
+        return [];
+      }
+
       return extractPurchased(json.encode(result));
     }
     return [];
